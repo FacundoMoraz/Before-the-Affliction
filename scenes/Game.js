@@ -80,7 +80,7 @@ export default class Game extends Phaser.Scene {
             this.gameOver = true;
           }
         }
-  }
+  
 
     agregarTiempo(Gaucho, reloj) {
       reloj.destroy()
@@ -91,4 +91,4 @@ export default class Game extends Phaser.Scene {
   update() {
     // update game objects
   }
-
+}
