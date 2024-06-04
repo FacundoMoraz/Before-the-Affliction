@@ -47,7 +47,7 @@ export default class Game extends Phaser.Scene {
     this.reloj = this.physics.add.Group()
     
     this.physics.add.collider(
-      this.personaje, 
+      this.Gaucho, 
       this.reloj, 
       this.agregarTiempo, 
       null, 
@@ -60,6 +60,22 @@ export default class Game extends Phaser.Scene {
         callbackScope: this,
         loop: true,
       })
+
+      //puntaje
+      this.scoreText = this.add.text ( //Texto de contador de puntos
+    10,
+    40,
+    `Puntaje: ${this.score}
+    T: ${this.figuras["triangulo"].cantidad}
+    C: ${this.figuras["cuadrado"].cantidad}
+    R: ${this.figuras["rombo"].cantidad}
+    BIMB: ${this.figuras["bomba"].cantidad}
+    REG: ${this.figuras["Reloj"].cantidad}`
+  );
+
+  //reinicio
+  this.r = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.R);
+
   }
 
   timeMas() {
@@ -73,22 +89,84 @@ export default class Game extends Phaser.Scene {
   }
 
   handlerTimer() { 
-      // cuenta regresiva
-          this.timer -= 1;
-          this.timerText.setText(`tiempo restante: ${this.timer}`);
-          if (this.timer === 0) {
-            this.gameOver = true;
-          }
+    // cuenta regresiva
+        this.timer -= 1;
+        this.timerText.setText(`tiempo restante: ${this.timer}`);
+        if (this.timer === 0) {
+          this.gameOver = true;
         }
-  
+      }
 
-    agregarTiempo(Gaucho, reloj) {
-      reloj.destroy()
-      this.timer += 10
-      console.log(this.timer);
+
+  agregarTiempo(Gaucho, reloj) {
+    reloj.destroy()
+    this.timer += 10
+    console.log(this.timer);
+  }
+
+  onSecond() {
+    //crear RE spawneo recolectable   // funcion callback
+    const tipos = ["triangulo","cuadrado","rombo", "bomba"];
+    const tipo = Phaser.Math.RND.pick(tipos);
+    let recolectable = this.recolectables.create(
+      Phaser.Math.Between(20, 790),
+      0,
+      tipo
+    );
+    recolectable.setVelocity(0, 20);
+  }
+
+  onShapeCollect(Gaucho, recolectable, ) {
+   
+    console.log("recolectables ", recolectable.texture.key)
+      //recolectable.destroy(); //se puede usar destroy o disable
+
+
+    const puntos = recolectable.getData("puntos");
+
+
+      const nombrefig = recolectable.texture.key; //Identificar cual figura se recolecta
+      const puntosfig = this.figuras[nombrefig].puntos; //Identificar cuantos puntos suma esa figura
+      this.score += puntosfig; //Sumar los puntos de la figura al score
+      console.log(this.score);
+      this.figuras[nombrefig].cantidad += 1;
+      
+      console.table(this.figuras);
+      console.log("score", this.score);
+      recolectable.destroy(); //Desaparecer el recolectable al chocar con el personaje
+      
+      this.scoreText.setText( //score
+      `Puntaje: ${this.score}
+      T: ${this.figuras["triangulo"].cantidad}
+      C: ${this.figuras["cuadrado"].cantidad}
+      R: ${this.figuras["rombo"].cantidad}
+      BIMB: ${this.figuras["bomba"].cantidad}
+      REG: ${this.figuras["Reloj"].cantidad}`
+      );
+        
+      //requisitos para ganar
+      const cumplePuntos = this.score >= 100;
+      if (cumplePuntos) { //Ganar
+        console.log("Ganaste");
+        this.scene.start("end", {
+        score: this.score,
+        gameOver: this.gameOver,
+        });
+              
+      }
     }
 
   update() {
-    // update game objects
+    if (this.gameOver && this.r.isDown) {
+      this.Scene.restart();
+    }
+if (this.gameOver) {
+  //this.physics.pause();//pausar la pantalla
+  this.scene.start("end", {
+    score: this.score,
+    gameOver: this.gameOver,
+  })
+    //return; //Hace una salida de la funcion para que no se vuelva a ejecutar
+}
   }
 }
