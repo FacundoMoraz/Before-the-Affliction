@@ -2,7 +2,7 @@ import Game from "./scenes/Game.js";
 import End from "./End.js";
 
 // Create a new Phaser config object
-const config = {
+var config = {
   type: Phaser.AUTO,
   width: 800,
   height: 600,
@@ -10,12 +10,12 @@ const config = {
     mode: Phaser.Scale.FIT,
     autoCenter: Phaser.Scale.CENTER_BOTH,
     min: {
-      width: 800,
-      height: 600,
+      width: 1200,
+      height: 100,
     },
     max: {
-      width: 1600,
-      height: 1200,
+      width: 1100,
+      height: 600,
     },
   },
   physics: {
@@ -26,8 +26,6 @@ const config = {
     },
   },
   // List of scenes to load
-  // Only the first scene will be shown
-  // Remember to import the scene before adding it to the list
   scene: [Game, End],
 };
 

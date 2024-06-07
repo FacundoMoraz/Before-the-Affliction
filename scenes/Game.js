@@ -14,7 +14,7 @@ export default class Game extends Phaser.Scene {
       Diana_Media: {puntos: 20, cantidad: 0},
       Diana_Grande: {puntos: 10, cantidad: 0},
       Bomba: {puntos: -10, cantidad: 0},
-      Reloj: {tiemPlus: 10}
+      Reloj: {tiemPlus: 10, cantidad: 0}
       }
     }
 
@@ -29,9 +29,10 @@ export default class Game extends Phaser.Scene {
     this.load.image("Diana_Media", "../public/assets/Diana_Media.png");
     this.load.image("Diana_Peque", "../public/assets/Diana_Peque.png");
 
-    //reloj y bomba
+    //reloj, bomba y puntero
     this.load.image("Bomba", "../public/assets/Bomba.png");
     this.load.image("Reloj", "../public/assets/Reloj.webp");    
+    this.load.image("Mira", "../public/assets/puntero.png");
   }
 
   create() {
@@ -40,11 +41,11 @@ export default class Game extends Phaser.Scene {
     this.Fondo.setScale(1.9,1.7)
 
     //gaucho
-    this.Gaucho = this.add.image(150, 360, "Gaucho");
-    this.Gaucho.setScale(1)
+    this.Gaucho = this.add.image(105, 500, "Gaucho");
+    this.Gaucho.setScale(0.7,0.7)
 
     //reloj
-    this.reloj = this.physics.add.Group()
+    this.reloj = this.physics.add.group()
     
     this.physics.add.collider(
       this.Gaucho, 
@@ -66,15 +67,22 @@ export default class Game extends Phaser.Scene {
     10,
     40,
     `Puntaje: ${this.score}
-    T: ${this.figuras["triangulo"].cantidad}
-    C: ${this.figuras["cuadrado"].cantidad}
-    R: ${this.figuras["rombo"].cantidad}
-    BIMB: ${this.figuras["bomba"].cantidad}
+    G: ${this.figuras["Diana_Grande"].cantidad}
+    M: ${this.figuras["Diana_Media"].cantidad}
+    P: ${this.figuras["Diana_Peque"].cantidad}
+    BOMB: ${this.figuras["Bomba"].cantidad}
     REG: ${this.figuras["Reloj"].cantidad}`
   );
 
   //reinicio
   this.r = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.R);
+
+  //puntero
+  this.input.on("pointerdown", (pointer)=>{
+    if (pointer.rightButtonDown) {
+      this.add.image(pointer.x, pointer.y, "Mira").setScale(1);
+    }
+  });
 
   }
 
@@ -106,7 +114,7 @@ export default class Game extends Phaser.Scene {
 
   onSecond() {
     //crear RE spawneo recolectable   // funcion callback
-    const tipos = ["triangulo","cuadrado","rombo", "bomba"];
+    const tipos = ["Diana_Grande","Diana_Media","Diana_Peque", "Bomba", "Reloj"];
     const tipo = Phaser.Math.RND.pick(tipos);
     let recolectable = this.recolectables.create(
       Phaser.Math.Between(20, 790),
@@ -137,15 +145,15 @@ export default class Game extends Phaser.Scene {
       
       this.scoreText.setText( //score
       `Puntaje: ${this.score}
-      T: ${this.figuras["triangulo"].cantidad}
-      C: ${this.figuras["cuadrado"].cantidad}
-      R: ${this.figuras["rombo"].cantidad}
-      BIMB: ${this.figuras["bomba"].cantidad}
+      G: ${this.figuras["Diana_Grande"].cantidad}
+      M: ${this.figuras["Diana_Media"].cantidad}
+      P: ${this.figuras["Diana_Peque"].cantidad}
+      BOMB: ${this.figuras["Bomba"].cantidad}
       REG: ${this.figuras["Reloj"].cantidad}`
       );
         
       //requisitos para ganar
-      const cumplePuntos = this.score >= 100;
+      const cumplePuntos = this.score >= 100000;
       if (cumplePuntos) { //Ganar
         console.log("Ganaste");
         this.scene.start("end", {
