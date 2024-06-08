@@ -77,12 +77,26 @@ export default class Game extends Phaser.Scene {
   //reinicio
   this.r = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.R);
 
-  //puntero
-  this.input.on("pointerdown", (pointer)=>{
-    if (pointer.rightButtonDown) {
-      this.add.image(pointer.x, pointer.y, "Mira").setScale(1);
-    }
+  //spawneo de dianas
+  this.time.addEvent({
+    delay: 2000, //tiempo entre spawneo de recolectables 1000=1 segundo
+    callback: this.handlerTimer,
+    callbackScope: this,
+    loop: true,
   });
+
+  this.time.addEvent({
+    delay: 1000, 
+    callback: this.onSecond,
+    callbackScope: this,
+    loop: true,
+  });
+
+//grupo de dianas, creo?
+  this.Dianas = this.physics.add.group()
+
+
+  //puntero
 
   }
 
@@ -116,24 +130,40 @@ export default class Game extends Phaser.Scene {
     //crear RE spawneo recolectable   // funcion callback
     const tipos = ["Diana_Grande","Diana_Media","Diana_Peque", "Bomba", "Reloj"];
     const tipo = Phaser.Math.RND.pick(tipos);
-    let recolectable = this.recolectables.create(
+    let Diana = this.Dianas.create(
       Phaser.Math.Between(20, 790),
       0,
       tipo
     );
-    recolectable.setVelocity(0, 20);
+    Diana.setVelocity(0, 20);
+
+     //asignar rebote
+     const rebote = Phaser.Math.FloatBetween(0.4, 0.8);
+     Diana.setBounce(0.75);
+ 
+     //set data
+     Diana.setData("puntos", this.figuras[tipo].puntos);
+     Diana.getData("tipo", tipo);
+ 
   }
 
-  onShapeCollect(Gaucho, recolectable, ) {
-   
-    console.log("recolectables ", recolectable.texture.key)
+  onShapeCollect(Gaucho, Diana, ) {
+    
+    //puntero 2.0
+    this.figuras.on('pointerdown', () => {
+      this.figuras.destroy();
+  });
+
+
+
+    console.log("Dianas ", Diana.texture.key)
       //recolectable.destroy(); //se puede usar destroy o disable
 
 
-    const puntos = recolectable.getData("puntos");
+    const puntos = Diana.getData("puntos");
 
 
-      const nombrefig = recolectable.texture.key; //Identificar cual figura se recolecta
+      const nombrefig = Diana.texture.key; //Identificar cual figura se recolecta
       const puntosfig = this.figuras[nombrefig].puntos; //Identificar cuantos puntos suma esa figura
       this.score += puntosfig; //Sumar los puntos de la figura al score
       console.log(this.score);
@@ -141,7 +171,7 @@ export default class Game extends Phaser.Scene {
       
       console.table(this.figuras);
       console.log("score", this.score);
-      recolectable.destroy(); //Desaparecer el recolectable al chocar con el personaje
+      Diana.destroy(); //Desaparecer el recolectable al chocar con el personaje
       
       this.scoreText.setText( //score
       `Puntaje: ${this.score}
