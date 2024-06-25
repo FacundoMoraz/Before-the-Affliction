@@ -97,13 +97,6 @@ export default class Game extends Phaser.Scene {
       loop: true,
     });
 
-    //grupo de dianas, creo?
-
-    //puntero
-    /*  this.figuras.on("pointerdown", function (pointer) {
-      this.destroy();
-    });
-*/
   }
 
   timeMas() {
