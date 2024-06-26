@@ -21,7 +21,7 @@ export default class Game extends Phaser.Scene {
 
   preload() {
     // load assets
-    this.load.image("Fondo", "../public/FondoDesierto.png"); //fondo
+    this.load.image("Fondo", "./public/FondoDesierto.png"); //fondo
 
     this.load.image("Gaucho", "./public/Gaucho.png"); //gaucho
 
