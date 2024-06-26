@@ -15,7 +15,7 @@ export default class Game extends Phaser.Scene {
       Diana_Media: { puntos: 20, cantidad: 0 },
       Diana_Grande: { puntos: 10, cantidad: 0 },
       Bomba: { puntos: -10, cantidad: 0 },
-      Reloj: { tiemPlus: 10, cantidad: 0 },
+      Reloj: { puntos: 5, cantidad: 0 },
     };
   }
 
@@ -34,6 +34,8 @@ export default class Game extends Phaser.Scene {
     this.load.image("Bomba", "../public/assets/Bomba.png");
     this.load.image("Reloj", "../public/assets/Reloj.webp");
     this.load.image("Mira", "../public/assets/puntero.png");
+
+    this.load.image("Plataforma", "../public/assets/Plataforma.png");
   }
 
   create() {
@@ -41,25 +43,55 @@ export default class Game extends Phaser.Scene {
     this.Fondo = this.add.image(500, 300, "Fondo");
     this.Fondo.setScale(1.9, 1.7);
 
-    //gaucho
-    this.Gaucho = this.add.image(105, 500, "Gaucho");
-    this.Gaucho.setScale(0.7, 0.7);
-
-    //reloj
+    this.Plataforma = this.physics.add
+      .sprite(1, 600, "Plataforma")
+      .setSize(10000, 10);
+    this.Plataforma.body.setImmovable(true);
+    this.Plataforma.body.setAllowGravity(false);
+    this.Dianas = this.physics.add.group(); //grupo de dianas
     this.reloj = this.physics.add.group();
-    this.Dianas = this.physics.add.group();
+    this.Bomba = this.physics.add.group();
 
     this.physics.add.collider(
-      this.Gaucho,
-      this.reloj,
-      this.agregarTiempo,
+      this.Plataforma,
+      this.Dianas,
+      this.DestroyDianas,
       null,
       this
     );
 
+    this.physics.add.collider(
+      this.Plataforma,
+      this.reloj,
+      this.DestroyRej,
+      null,
+      this
+    );
+
+    this.physics.add.collider(
+      this.Plataforma,
+      this.Bomba,
+      this.DestroyBombas,
+      null,
+      this
+    );
+
+    //gaucho
+    this.Gaucho = this.add.image(105, 500, "Gaucho");
+    this.Gaucho.setScale(0.7, 0.7);
+
+    //reloj y grupos
+
     this.time.addEvent({
-      delay: 8000,
+      delay: 6000,
       callback: this.timeMas,
+      callbackScope: this,
+      loop: true,
+    });
+
+    this.time.addEvent({
+      delay: 800,
+      callback: this.Kbum,
       callbackScope: this,
       loop: true,
     });
@@ -79,24 +111,20 @@ export default class Game extends Phaser.Scene {
 
     this.timerText = this.add.text(10, 20, `Tiempo restante: ${this.timer}`);
 
-    //reinicio
-    this.r = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.R);
+    this.time.addEvent({
+      delay: 1000, //tiempo entre spawneo de recolectables 1000=1 segundo
+      callback: this.handlerTimer, //  TIEMPOOOO
+      callbackScope: this,
+      loop: true,
+    });
 
     //spawneo de dianas
     this.time.addEvent({
-      delay: 1000, //tiempo entre spawneo de recolectables 1000=1 segundo
-      callback: this.handlerTimer,
-      callbackScope: this,
-      loop: true,
-    });
-
-    this.time.addEvent({
       delay: 1000,
-      callback: this.onSecond,
+      callback: this.onSecond, //  OBJETOS :V
       callbackScope: this,
       loop: true,
     });
-
   }
 
   timeMas() {
@@ -105,7 +133,38 @@ export default class Game extends Phaser.Scene {
     reloj.on(
       "pointerdown",
       function (pointer) {
-        console.log("click");
+        this.timer += 10;
+        reloj.destroy();
+      },
+      this
+    );
+  }
+
+  DestroyDianas(Plataforma, Dianas) {
+    Dianas.destroy();
+  }
+
+  DestroyRej(Plataforma, reloj) {
+    reloj.destroy();
+  }
+
+  DestroyBombas(Plataforma, Bomba) {
+    Bomba.destroy();
+  }
+
+  Kbum() {
+    let Bomba = this.Bomba.create(
+      Phaser.Math.Between(100, 790),
+      0,
+      "Bomba"
+    ).setScale(0.1);
+    Bomba.setInteractive();
+    Bomba.on(
+      "pointerdown",
+      function (pointer) {
+        this.score -= 10;
+        Bomba.destroy();
+        this.updatePuntos();
       },
       this
     );
@@ -123,29 +182,13 @@ export default class Game extends Phaser.Scene {
     }
   }
 
-  agregarTiempo(Gaucho, reloj) {
-    reloj.destroy();
-    this.timer += 10;
-    console.log(this.timer);
-  }
-
   onSecond() {
     //crear RE spawneo recolectable   // funcion callback
-    const tipos = [
-      "Diana_Grande",
-      "Diana_Media",
-      "Diana_Peque",
-      "Bomba",
-      "Reloj",
-    ];
+    const tipos = ["Diana_Grande", "Diana_Media", "Diana_Peque"];
 
     const tipo = Phaser.Math.RND.pick(tipos);
     let Diana = this.Dianas.create(Phaser.Math.Between(20, 790), 0, tipo);
     Diana.setVelocity(0, 20);
-
-    //asignar rebote
-    const rebote = Phaser.Math.FloatBetween(0.4, 0.8);
-    Diana.setBounce(rebote);
 
     //set data
     Diana.setData("puntos", this.figuras[tipo].puntos);
@@ -155,29 +198,20 @@ export default class Game extends Phaser.Scene {
     Diana.on(
       "pointerdown",
       function (pointer) {
-        Diana.destroy();
+        const nombrefig = Diana.texture.key; //Identificar cual figura se recolecta
+        const puntosfig = this.figuras[nombrefig].puntos; //Identificar cuantos puntos suma esa figura
+        this.score += puntosfig; //Sumar los puntos de la figura al score
+        this.figuras[nombrefig].cantidad += 1;
+        console.log("score", this.score);
+        Diana.destroy(); //Desaparecer el recolectable al chocar con el personaje
+        0;
+        this.updatePuntos();
       },
       this
     );
   }
 
-  onShapeCollect(Gaucho, Diana) {
-    return;
-    console.log("Dianas ", Diana.texture.key);
-    //recolectable.destroy(); //se puede usar destroy o disable
-
-    const puntos = Diana.getData("puntos");
-
-    const nombrefig = Diana.texture.key; //Identificar cual figura se recolecta
-    const puntosfig = this.figuras[nombrefig].puntos; //Identificar cuantos puntos suma esa figura
-    this.score += puntosfig; //Sumar los puntos de la figura al score
-    console.log(this.score);
-    this.figuras[nombrefig].cantidad += 1;
-
-    console.table(this.figuras);
-    console.log("score", this.score);
-    Diana.destroy(); //Desaparecer el recolectable al chocar con el personaje
-
+  updatePuntos() {
     this.scoreText.setText(
       //score
       `Puntaje: ${this.score}
@@ -187,12 +221,15 @@ export default class Game extends Phaser.Scene {
       BOMB: ${this.figuras["Bomba"].cantidad}
       REG: ${this.figuras["Reloj"].cantidad}`
     );
+  }
 
+  onShapeCollect(Diana) {
     //requisitos para ganar
     const cumplePuntos = this.score >= 100000;
     if (cumplePuntos) {
       //Ganar
-      console.log("Ganaste");
+      console.log("Ganaste??");
+      console.log("Como ganaste?");
       this.scene.start("end", {
         score: this.score,
         gameOver: this.gameOver,
@@ -202,9 +239,7 @@ export default class Game extends Phaser.Scene {
 
   update() {
     return;
-    if (this.gameOver && this.r.isDown) {
-      this.Scene.restart();
-    }
+
     if (this.gameOver) {
       //this.physics.pause();//pausar la pantalla
       this.scene.start("end", {

@@ -1,5 +1,6 @@
 import Game from "./scenes/Game.js";
-import End from "./End.js";
+import End from "./scenes/End.js";
+import Menu from "./scenes/Menu_Ini.js";
 
 // Create a new Phaser config object
 var config = {
@@ -21,12 +22,12 @@ var config = {
   physics: {
     default: "arcade",
     arcade: {
-      gravity: { y: 200 },
-      debug: false,
+      gravity: { y: 50 },
+      debug: true,
     },
   },
   // List of scenes to load
-  scene: [Game, End],
+  scene: [Menu, Game, End],
 };
 
 // Create a new Phaser game instance
