@@ -21,21 +21,21 @@ export default class Game extends Phaser.Scene {
 
   preload() {
     // load assets
-    this.load.image("Fondo", "./public/assets/FondoDesierto.png"); //fondo
+    this.load.image("Fondo", "./public/FondoDesierto.png"); //fondo
 
-    this.load.image("Gaucho", "./public/assets/Gaucho.png"); //gaucho
+    this.load.image("Gaucho", "./public/Gaucho.png"); //gaucho
 
     //Dianas
-    this.load.image("Diana_Grande", "./public/assets/Diana_Grande.png");
-    this.load.image("Diana_Media", "./public/assets/Diana_Media.png");
-    this.load.image("Diana_Peque", "./public/assets/Diana_Peque.png");
+    this.load.image("Diana_Grande", "./public/Diana_Grande.png");
+    this.load.image("Diana_Media", "./public/Diana_Media.png");
+    this.load.image("Diana_Peque", "./public/Diana_Peque.png");
 
     //reloj, bomba y puntero
-    this.load.image("Bomba", "./public/assets/Bomba.png");
-    this.load.image("Reloj", "./public/assets/Reloj.webp");
-    this.load.image("Mira", "./public/assets/puntero.png");
+    this.load.image("Bomba", "./public/Bomba.png");
+    this.load.image("Reloj", "./public/Reloj.webp");
+    this.load.image("Mira", "./public/puntero.png");
 
-    this.load.image("Plataforma", "./public/assets/Plataforma.png");
+    this.load.image("Plataforma", "./public/Plataforma.png");
   }
 
   create() {
