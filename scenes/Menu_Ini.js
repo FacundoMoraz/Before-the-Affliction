@@ -6,7 +6,8 @@ export default class Menu extends Phaser.Scene {
   init(data) {}
 
   preload() {
-    this.load.image("Fondo", "../public/assets/Fondo.jpg");
+    this.load.image("Fondo", "./public/Fondo.jpg");
+    this.load.image("Titulo", "./public/Titulo.png");
   }
 
   create() {
@@ -18,6 +19,8 @@ export default class Menu extends Phaser.Scene {
       500,
       "aprieta la barra espaciadora para jugar"
     );
+
+    this.Titulo = this.add.image(400, 250, "Titulo")
 
     //empezar
     this.Espacio = this.input.keyboard.addKey(

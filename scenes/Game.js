@@ -36,6 +36,9 @@ export default class Game extends Phaser.Scene {
     this.load.image("Mira", "./public/puntero.png");
 
     this.load.image("Plataforma", "./public/Plataforma.png");
+
+    //musica
+    this.load.audio("Musica", "./public/Musica.wav");
   }
 
   create() {
@@ -80,18 +83,16 @@ export default class Game extends Phaser.Scene {
     this.Gaucho = this.add.image(105, 500, "Gaucho");
     this.Gaucho.setScale(0.7, 0.7);
 
-    //reloj y grupos
-
     this.time.addEvent({
-      delay: 6000,
-      callback: this.timeMas,
+      delay: 4000,
+      callback: this.timeMas,    //reloj spawn
       callbackScope: this,
       loop: true,
     });
 
     this.time.addEvent({
-      delay: 800,
-      callback: this.Kbum,
+      delay: 700,
+      callback: this.Kbum,//spawn bombas
       callbackScope: this,
       loop: true,
     });
@@ -125,6 +126,10 @@ export default class Game extends Phaser.Scene {
       callbackScope: this,
       loop: true,
     });
+
+    //musica create
+    this.Musica = this.sound.add("Musica");
+    this.Musica.play();
   }
 
   timeMas() {
@@ -157,7 +162,7 @@ export default class Game extends Phaser.Scene {
       Phaser.Math.Between(100, 790),
       0,
       "Bomba"
-    ).setScale(0.1);
+    );
     Bomba.setInteractive();
     Bomba.on(
       "pointerdown",
@@ -188,7 +193,7 @@ export default class Game extends Phaser.Scene {
 
     const tipo = Phaser.Math.RND.pick(tipos);
     let Diana = this.Dianas.create(Phaser.Math.Between(20, 790), 0, tipo);
-    Diana.setVelocity(0, 20);
+    
 
     //set data
     Diana.setData("puntos", this.figuras[tipo].puntos);
