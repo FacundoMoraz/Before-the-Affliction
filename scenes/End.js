@@ -14,6 +14,6 @@ export default class End extends Phaser.Scene {
       color: "#ffffff",
     }).setOrigin[0.5];
 
-    this.add.text(200, 350, `Score ${this.score}`); //Texto de puntaje
+    this.add.text(200, 350, `Puntos: ${this.score}`); //Texto de puntaje
   }
 }

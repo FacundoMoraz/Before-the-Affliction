@@ -130,6 +130,7 @@ export default class Game extends Phaser.Scene {
     //musica create
     this.Musica = this.sound.add("Musica");
     this.Musica.play();
+    this.Musica.loop(true);
   }
 
   timeMas() {
