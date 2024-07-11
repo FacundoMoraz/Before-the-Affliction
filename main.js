@@ -22,7 +22,7 @@ var config = {
   physics: {
     default: "arcade",
     arcade: {
-      gravity: { y: 550 },
+      gravity: { y: 750 },
       debug: false,
     },
   },

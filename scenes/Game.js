@@ -7,7 +7,7 @@ export default class Game extends Phaser.Scene {
 
   init() {
     this.gameOver = false;
-    this.timer = 40; // son segundos
+    this.timer = 30; // son segundos
     this.score = 0; //contador de score
     this.figuras = {
       //grupo de figuras con su valor
