@@ -14,7 +14,7 @@ export default class Game extends Phaser.Scene {
       Diana_Peque: { puntos: 30, cantidad: 0 },
       Diana_Media: { puntos: 20, cantidad: 0 },
       Diana_Grande: { puntos: 10, cantidad: 0 },
-      Bomba: { puntos: -10, cantidad: 0 },
+      Bomba: { puntos: -50, cantidad: 0 },
       Reloj: { puntos: 5, cantidad: 0 },
     };
   }
